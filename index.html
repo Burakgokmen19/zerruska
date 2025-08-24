@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zerruska Diyet Uygulaması</title>
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #1e3c72, #2a5298, #1e3c72);
+            --card-bg: linear-gradient(145deg, #2d4a6b, #1e3c72);
+            --card-bg-hover: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            --text-color: white;
+            --text-light: #b8c6db;
+            --accent-color: #ff6b6b;
+            --success-color: #4ecdc4;
+            --container-bg: rgba(0, 0, 0, 0.3);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="light"] {
+            --primary-bg: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
+            --card-bg: linear-gradient(145deg, #ffffff, #f5f5f5);
+            --card-bg-hover: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            --text-color: #333;
+            --text-light: #666;
+            --accent-color: #d32f2f;
+            --success-color: #388e3c;
+            --container-bg: rgba(255, 255, 255, 0.9);
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-bg);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .profile-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 50px;
+            padding: 8px 15px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .profile-btn:hover {
+            background: var(--card-bg-hover);
+            transform: translateY(-2px);
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1em;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .calorie-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 15px;
+        }
+
+        .calorie-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .calorie-title {
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .calorie-number {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .calorie-progress {
+            background: var(--border-color);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .calorie-fill {
+            background: linear-gradient(90deg, var(--success-color), var(--accent-color));
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .theme-toggle {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-btn {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 50px;
+            padding: 8px 20px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .theme-btn:hover {
+            background: var(--card-bg-hover);
+            transform: translateY(-2px);
+        }
+
+        .meal-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .meal-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border-color: var(--success-color);
+        }
+
+        .meal-card.selected {
+            background: var(--card-bg-hover);
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .meal-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .meal-title {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .generate-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(45deg, #ff5252, #ff6b6b);
+        }
+
+        .generate-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            background: var(--container-bg);
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 1.3em;
+            color: var(--success-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .menu-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner-text {
+            font-size: 1.2em;
+            color: var(--success-color);
+            margin-bottom: 15px;
+            animation: pulse 1s infinite;
+        }
+
+        .menu-carousel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 150px;
+            transition: all 0.5s ease;
+            opacity: 1;
+        }
+
+        .menu-carousel.spinning {
+            animation: smoothSlide 0.6s ease-in-out infinite;
+        }
+
+        @keyframes smoothSlide {
+            0% { 
+                transform: translateX(0); 
+                opacity: 0.8; 
+            }
+            50% { 
+                transform: translateX(20px); 
+                opacity: 0.5; 
+                background: var(--card-bg-hover);
+            }
+            100% { 
+                transform: translateX(0); 
+                opacity: 0.8; 
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .diet-menu {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .menu-meal {
+            font-size: 1em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .accept-menu-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(45deg, var(--success-color), #45b7d1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .accept-menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+            background: linear-gradient(45deg, #45b7d1, var(--success-color));
+        }
+
+        .menu-items {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .menu-items li {
+            padding: 3px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+
+        .menu-items li:last-child {
+            border-bottom: none;
+        }
+
+        .calories {
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        /* Profile Modal */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-content {
+            background: var(--container-bg);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .profile-title {
+            font-size: 1.5em;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .profile-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            color: var(--success-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-stat {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .profile-stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .profile-stat-label {
+            font-size: 0.8em;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .settings-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, var(--success-color), #45b7d1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .achievement {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .achievement.unlocked {
+            background: var(--card-bg-hover);
+            box-shadow: 0 3px 10px rgba(78, 205, 196, 0.3);
+        }
+
+        .achievement-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .achievement-title {
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .achievement-desc {
+            font-size: 0.7em;
+            color: var(--text-light);
+            margin-top: 3px;
+        }
+
+        .history-section {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+        }
+
+        .history-date {
+            font-size: 0.7em;
+            color: var(--text-light);
+        }
+
+        /* Mobil Optimizasyonu */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                font-size: 2em;
+            }
+            
+            .subtitle {
+                font-size: 0.9em;
+                margin-bottom: 15px;
+            }
+
+            .profile-btn {
+                position: static;
+                margin: 0 auto 15px auto;
+                display: flex;
+                width: fit-content;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            .stat-item {
+                padding: 8px;
+            }
+
+            .stat-number {
+                font-size: 1.3em;
+            }
+
+            .calorie-section {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            .meal-selection {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .meal-card {
+                padding: 15px;
+                min-height: 100px;
+            }
+            
+            .meal-icon {
+                font-size: 2em;
+            }
+            
+            .meal-title {
+                font-size: 1em;
+            }
+            
+            .generate-btn {
+                font-size: 1.1em;
+                padding: 12px 25px;
+                max-width: 280px;
+                margin: 15px auto;
+            }
+            
+            .result-section {
+                padding: 15px;
+                margin-top: 15px;
+            }
+            
+            .result-title {
+                font-size: 1.1em;
+            }
+            
+            .menu-meal {
+                font-size: 0.95em;
+            }
+            
+            .menu-items li {
+                font-size: 0.85em;
+                padding: 2px 0;
+            }
+            
+            .calories {
+                font-size: 0.75em;
+                padding: 3px 10px;
+            }
+
+            .profile-content {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .profile-stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .achievements {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+                margin: 3px;
+            }
+            
+            .logo {
+                font-size: 1.8em;
+            }
+            
+            .meal-card {
+                padding: 12px;
+                min-height: 90px;
+            }
+            
+            .meal-icon {
+                font-size: 1.8em;
+                margin-bottom: 8px;
+            }
+            
+            .generate-btn {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+            
+            .result-section {
+                padding: 12px;
+            }
+            
+            .diet-menu {
+                padding: 12px;
+            }
+
+            .profile-content {
+                padding: 15px;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <div class="header">
+            <button class="profile-btn" id="profileBtn">
+                👤 Profil
+            </button>
+            <h1 class="logo">Zerruska Diyet</h1>
+            <p class="subtitle">Sağlıklı yaşam için özel diyet menüleri</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="todayCalories">0</div>
+                <div class="stat-label">Bugün Kalori</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="streakCounter">0</div>
+                <div class="stat-label">Gün Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalMenus">0</div>
+                <div class="stat-label">Toplam Menü</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="achievements">0</div>
+                <div class="stat-label">Başarı</div>
+            </div>
+        </div>
+
+        <div class="calorie-section">
+            <div class="calorie-header">
+                <span class="calorie-title">Günlük Kalori Hedefi</span>
+                <span class="calorie-number" id="calorieText">0 / 2000</span>
+            </div>
+            <div class="calorie-progress">
+                <div class="calorie-fill" id="calorieProgress" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="theme-toggle">
+            <button class="theme-btn" id="themeToggle">🌙 Koyu Tema</button>
+        </div>
+
+        <div class="meal-selection">
+            <div class="meal-card" data-meal="sabah">
+                <div class="meal-icon">🌅</div>
+                <div class="meal-title">Sabah</div>
+            </div>
+            <div class="meal-card" data-meal="ogle">
+                <div class="meal-icon">☀️</div>
+                <div class="meal-title">Öğle</div>
+            </div>
+            <div class="meal-card" data-meal="aksam">
+                <div class="meal-icon">🌙</div>
+                <div class="meal-title">Akşam</div>
+            </div>
+        </div>
+
+        <button class="generate-btn" id="generateMenu" disabled>
+            Diyet Menü Seç
+        </button>
+
+        <div class="menu-spinner" id="menuSpinner">
+            <div class="spinner-text">Sağlıklı menüler arasından seçiliyor...</div>
+            <div class="menu-carousel" id="menuCarousel">
+                <div class="menu-meal">Diyet menü hazırlanıyor...</div>
+                <ul class="menu-items">
+                    <li>Düşük kalori seçenekler aranıyor...</li>
+                    <li>Sağlıklı malzemeler seçiliyor...</li>
+                    <li>Kalorier hesaplanıyor...</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <h3 class="result-title">Sizin İçin Seçilen Diyet Menü</h3>
+            <div id="menuResult"></div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-content">
+            <div class="profile-header">
+                <h2 class="profile-title">👤 Profil</h2>
+                <button class="close-btn" id="closeProfile">✕</button>
+            </div>
+
+            <div class="profile-section">
+                <h3 class="section-title">📊 İstatistiklerim</h3>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-number" id="profileCalories">0</div>
+                        <div class="profile-stat-label">Bugün Kalori</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-number" id="profileStreak">0</div>
+                        <div class="profile-stat-label">Gün Streak</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-number" id="profileMenus">0</div>
+                        <div class="profile-stat-label">Toplam Menü</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-number" id="profileAchievements">0</div>
+                        <div class="profile-stat-label">Başarı</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3 class="section-title">⚙️ Kişisel Ayarlar</h3>
+                <div class="settings-group">
+                    <label class="settings-label">İsminiz</label>
+                    <input type="text" class="settings-input" id="userName" placeholder="İsminizi girin">
+                </div>
+                <div class="settings-group">
+                    <label class="settings-label">Günlük Kalori Hedefi</label>
+                    <input type="number" class="settings-input" id="calorieGoal" placeholder="2000" min="1000" max="4000">
+                </div>
+                <div class="settings-group">
+                    <label class="settings-label">Hedef</label>
+                    <select class="settings-input" id="goal">
+                        <option value="lose">Kilo Vermek</option>
+                        <option value="maintain">Kilo Korumak</option>
+                        <option value="gain">Kilo Almak</option>
+                    </select>
+                </div>
+                <button class="save-btn" id="saveSettings">Ayarları Kaydet</button>
+                <button class="reset-btn" id="resetData">Verileri Sıfırla</button>
+            </div>
+
+            <div class="profile-section">
+                <h3 class="section-title">🏆 Başarılarım</h3>
+                <div class="achievements" id="achievementsList"></div>
+            </div>
+
+            <div class="profile-section">
+                <h3 class="section-title">📈 Son Menülerim</h3>
+                <div class="history-section" id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gerçek diyet menüleri - Türkiye'ye uygun sağlıklı malzemeler
+        const dietMenus = {
+            sabah: [
+                {
+                    name: "Protein Kahvaltısı",
+                    items: ["1 haşlanmış yumurta", "2 dilim tam buğday ekmeği", "50g beyaz peynir", "Domates ve salatalık", "1 bardak yeşil çay"],
+                    calories: 280
+                },
+                {
+                    name: "Yulaf Kahvaltısı",
+                    items: ["3 kaşık yulaf ezmesi", "1 küçük muz", "1 tatlı kaşığı bal", "5 adet ceviz", "1 bardak bitki çayı"],
+                    calories: 320
+                },
+                {
+                    name: "Lor Peyniri Özel",
+                    items: ["100g lor peyniri", "1 dilim tam tahıllı ekmek", "Taze nane ve maydanoz", "Cherry domates", "1 bardak yeşil çay"],
+                    calories: 240
+                },
+                {
+                    name: "Sebzeli Omlet",
+                    items: ["2 yumurtalı sebzeli omlet", "Ispanak ve mantar", "1 dilim kepekli ekmek", "1 bardak bitki çayı", "Limon"],
+                    calories: 290
+                },
+                {
+                    name: "Yoğurt Özel",
+                    items: ["1 kase yağsız yoğurt", "1 tatlı kaşığı bal", "5 adet badem", "Tarçın", "1 bardak yeşil çay"],
+                    calories: 220
+                },
+                {
+                    name: "Avokado Toast",
+                    items: ["1/2 avokado", "1 dilim tam buğday ekmek", "Limon suyu", "Domates", "1 bardak bitki çayı"],
+                    calories: 310
+                },
+                {
+                    name: "Cottage Cheese",
+                    items: ["100g cottage cheese", "Salatalık dilimleri", "Cherry domates", "Taze dereotu", "1 bardak yeşil çay"],
+                    calories: 180
+                },
+                {
+                    name: "Chia Pudding",
+                    items: ["2 kaşık chia tohumu", "1 bardak badem sütü", "1 tatlı kaşığı bal", "Tarçın", "Taze meyveler"],
+                    calories: 250
+                },
+                {
+                    name: "Smoothie Bowl",
+                    items: ["1 bardak ıspanak smoothie", "1/2 muz", "Yulaf parçacıkları", "Chia tohumu", "Ceviz"],
+                    calories: 280
+                },
+                {
+                    name: "Türk Kahvaltısı Fit",
+                    items: ["1 haşlanmış yumurta", "30g beyaz peynir", "Domates, salatalık", "Yeşillik", "1 bardak çay"],
+                    calories: 200
+                }
+            ],
+            ogle: [
+                {
+                    name: "Izgara Tavuk Salatası",
+                    items: ["100g ızgara tavuk göğsü", "Karışık yeşillik", "Cherry domates", "Salatalık", "Zeytinyağı limon sosu"],
+                    calories: 320
+                },
+                {
+                    name: "Balık Tabağı",
+                    items: ["150g ızgara levrek", "Buharda sebze", "Bulgur pilavı", "Yeşil salata", "Limon"],
+                    calories: 380
+                },
+                {
+                    name: "Sebze Çorbası",
+                    items: ["1 kase sebze çorbası", "Karışık salata", "1 dilim tam buğday ekmek", "Yoğurt", "Maydanoz"],
+                    calories: 250
+                },
+                {
+                    name: "Mercimek Yemeği",
+                    items: ["Kırmızı mercimek yemeği", "Bulgur pilavı", "Yeşil salata", "Turşu", "Yoğurt"],
+                    calories: 340
+                },
+                {
+                    name: "Ton Balığı Salatası",
+                    items: ["1 kutu ton balığı", "Karışık salata", "Haşlanmış yumurta", "Zeytinyağı", "Limon"],
+                    calories: 280
+                },
+                {
+                    name: "Tavuk Çorbası",
+                    items: ["Tavuk suyu çorbası", "Sebzeli bulgur", "Karışık salata", "Yoğurt", "Maydanoz"],
+                    calories: 300
+                },
+                {
+                    name: "Sebzeli Makarna",
+                    items: ["Tam buğday makarna", "Brokoli ve havuç", "Az yağ", "Parmesan peyniri", "Roka"],
+                    calories: 360
+                },
+                {
+                    name: "Izgara Somon",
+                    items: ["120g ızgara somon", "Kinoa salatası", "Yeşil fasulye", "Limon", "Dereotu"],
+                    calories: 420
+                },
+                {
+                    name: "Sebze Wrap",
+                    items: ["Tam buğday tortilla", "Izgara sebzeler", "Humus", "Roka", "Domates"],
+                    calories: 310
+                },
+                {
+                    name: "Keto Salata",
+                    items: ["Karışık yeşillik", "Avokado", "Ceviz", "Zeytinyağı", "Limon suyu"],
+                    calories: 290
+                }
+            ],
+            aksam: [
+                {
+                    name: "Sebze Çorbası",
+                    items: ["Sebze çorbası", "Salata", "30g beyaz peynir", "1 dilim ekmek", "Bitki çayı"],
+                    calories: 220
+                },
+                {
+                    name: "Hafif Omlet",
+                    items: ["2 yumurtalı sebzeli omlet", "Roka salatası", "1 dilim kepekli ekmek", "Bitki çayı", "Limon"],
+                    calories: 260
+                },
+                {
+                    name: "Yoğurt Menü",
+                    items: ["1 kase yoğurt", "Salatalık", "Nane", "Ceviz", "1 dilim ekmek"],
+                    calories: 200
+                },
+                {
+                    name: "Mercimek Çorbası",
+                    items: ["Kırmızı mercimek çorbası", "Yeşil salata", "Limon", "Maydanoz", "Bitki çayı"],
+                    calories: 180
+                },
+                {
+                    name: "Sebze Salatası",
+                    items: ["Bol sebzeli salata", "1 haşlanmış yumurta", "Zeytinyağı", "Limon", "Bitki çayı"],
+                    calories: 190
+                },
+                {
+                    name: "Fit Tost",
+                    items: ["Tam buğday ekmeği", "Az yağlı peynir", "Domates", "Yeşillik", "Bitki çayı"],
+                    calories: 240
+                },
+                {
+                    name: "Yayla Çorbası",
+                    items: ["Yayla çorbası", "Salata", "Yoğurt", "Maydanoz", "Bitki çayı"],
+                    calories: 210
+                },
+                {
+                    name: "Sebzeli Wrap",
+                    items: ["Sebze wrap", "Humus", "Salata", "Domates", "Bitki çayı"],
+                    calories: 250
+                },
+                {
+                    name: "Domates Çorbası",
+                    items: ["Domates çorbası", "30g peynir", "Salata", "1 dilim ekmek", "Bitki çayı"],
+                    calories: 200
+                },
+                {
+                    name: "Yeşil Salata",
+                    items: ["Karışık yeşillik", "Ceviz", "Zeytinyağı", "Limon", "Bitki çayı"],
+                    calories: 170
+                }
+            ]
+        };
+
+        // LocalStorage yönetimi
+        class DietApp {
+            constructor() {
+                this.initializeData();
+                this.bindEvents();
+                this.updateUI();
+                this.checkAchievements();
+            }
+
+            initializeData() {
+                if (!localStorage.getItem('dietData')) {
+                    const defaultData = {
+                        userName: '',
+                        calorieGoal: 2000,
+                        goal: 'lose',
+                        todayCalories: 0,
+                        streak: 0,
+                        totalMenus: 0,
+                        lastActive: new Date().toDateString(),
+                        history: [],
+                        favorites: [],
+                        achievements: [],
+                        theme: 'dark'
+                    };
+                    localStorage.setItem('dietData', JSON.stringify(defaultData));
+                }
+
+                this.data = JSON.parse(localStorage.getItem('dietData'));
+                this.updateStreak();
+            }
+
+            saveData() {
+                localStorage.setItem('dietData', JSON.stringify(this.data));
+            }
+
+            updateStreak() {
+                const today = new Date().toDateString();
+                const yesterday = new Date(Date.now() - 86400000).toDateString();
+                
+                if (this.data.lastActive !== today && this.data.lastActive !== yesterday) {
+                    this.data.streak = 0;
+                } else if (this.data.lastActive === yesterday) {
+                    // Streak devam ediyor, bugün menü seçince artacak
+                }
+                
+                this.data.lastActive = today;
+                this.saveData();
+            }
+
+            acceptMenu(meal, menu) {
+                const today = new Date().toDateString();
+                
+                this.data.todayCalories = (this.data.todayCalories || 0) + menu.calories;
+                
+                this.data.history.unshift({
+                    date: today,
+                    meal: meal,
+                    menu: menu,
+                    timestamp: Date.now()
+                });
+
+                this.data.history = this.data.history.slice(0, 30);
+                this.data.totalMenus++;
+
+                const todayMenus = this.data.history.filter(h => h.date === today).length;
+                if (todayMenus === 1) {
+                    this.data.streak++;
+                }
+
+                this.saveData();
+                this.updateUI();
+                this.checkAchievements();
+                
+                // Başarı mesajı göster
+                alert('✅ Menü kabul edildi! Kalori eklendi.');
+            }
+
+
+
+            checkAchievements() {
+                const achievements = [
+                    { id: 'first_menu', icon: '🎯', title: 'İlk Adım', desc: 'İlk menünü seç', condition: () => this.data.totalMenus >= 1 },
+                    { id: 'week_streak', icon: '🔥', title: 'Haftalık', desc: '7 gün streak', condition: () => this.data.streak >= 7 },
+                    { id: 'fifty_menus', icon: '🏆', title: 'Deneyimli', desc: '50 menü dene', condition: () => this.data.totalMenus >= 50 },
+                    { id: 'healthy_choice', icon: '🥗', title: 'Sağlıklı', desc: '10 düşük kalori menü', condition: () => this.getLowCalorieCount() >= 10 },
+                    { id: 'menu_master', icon: '👨‍🍳', title: 'Menü Ustası', desc: '25 menü kabul et', condition: () => this.data.totalMenus >= 25 },
+                    { id: 'month_streak', icon: '💪', title: 'Kararlı', desc: '30 gün streak', condition: () => this.data.streak >= 30 }
+                ];
+
+                achievements.forEach(achievement => {
+                    if (achievement.condition() && !this.data.achievements.includes(achievement.id)) {
+                        this.data.achievements.push(achievement.id);
+                        this.showAchievementNotification(achievement);
+                    }
+                });
+
+                this.saveData();
+            }
+
+            getLowCalorieCount() {
+                return this.data.history.filter(h => h.menu.calories < 250).length;
+            }
+
+            showAchievementNotification(achievement) {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('Yeni Başarı! 🎉', {
+                        body: `${achievement.title}: ${achievement.desc}`,
+                        icon: '/favicon.ico'
+                    });
+                }
+            }
+
+            updateUI() {
+                // Ana sayfa istatistikleri
+                document.getElementById('todayCalories').textContent = this.data.todayCalories || 0;
+                document.getElementById('streakCounter').textContent = this.data.streak || 0;
+                document.getElementById('totalMenus').textContent = this.data.totalMenus || 0;
+                document.getElementById('achievements').textContent = this.data.achievements.length;
+
+                // Profil istatistikleri
+                document.getElementById('profileCalories').textContent = this.data.todayCalories || 0;
+                document.getElementById('profileStreak').textContent = this.data.streak || 0;
+                document.getElementById('profileMenus').textContent = this.data.totalMenus || 0;
+                document.getElementById('profileAchievements').textContent = this.data.achievements.length;
+
+                // Kalori progressi
+                const progress = Math.min((this.data.todayCalories / this.data.calorieGoal) * 100, 100);
+                document.getElementById('calorieProgress').style.width = progress + '%';
+                document.getElementById('calorieText').textContent = `${this.data.todayCalories} / ${this.data.calorieGoal}`;
+
+                // Tema uygula
+                document.body.setAttribute('data-theme', this.data.theme);
+
+                // Ayarları doldur
+                document.getElementById('calorieGoal').value = this.data.calorieGoal;
+                document.getElementById('userName').value = this.data.userName;
+                document.getElementById('goal').value = this.data.goal;
+
+                this.updateHistory();
+                this.updateAchievements();
+            }
+
+            updateHistory() {
+                const historyList = document.getElementById('historyList');
+                const last7Days = this.data.history.filter(h => {
+                    const historyDate = new Date(h.timestamp);
+                    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                    return historyDate > weekAgo;
+                }).slice(0, 5);
+
+                historyList.innerHTML = last7Days.map(h => `
+                    <div class="history-item">
+                        <div>
+                            <strong>${h.menu.name}</strong>
+                            <div class="history-date">${new Date(h.timestamp).toLocaleDateString('tr-TR')}</div>
+                        </div>
+                        <div style="color: var(--accent-color); font-weight: bold;">
+                            ${h.menu.calories} kcal
+                        </div>
+                    </div>
+                `).join('') || '<div style="text-align: center; color: var(--text-light); padding: 20px;">Henüz menü seçimi yok</div>';
+            }
+
+            updateAchievements() {
+                const achievementsList = document.getElementById('achievementsList');
+                const allAchievements = [
+                    { id: 'first_menu', icon: '🎯', title: 'İlk Adım', desc: 'İlk menünü seç' },
+                    { id: 'week_streak', icon: '🔥', title: 'Haftalık', desc: '7 gün streak' },
+                    { id: 'fifty_menus', icon: '🏆', title: 'Deneyimli', desc: '50 menü dene' },
+                    { id: 'healthy_choice', icon: '🥗', title: 'Sağlıklı', desc: '10 düşük kalori menü' },
+                    { id: 'menu_master', icon: '👨‍🍳', title: 'Menü Ustası', desc: '25 menü kabul et' },
+                    { id: 'month_streak', icon: '💪', title: 'Kararlı', desc: '30 gün streak' }
+                ];
+
+                achievementsList.innerHTML = allAchievements.map(achievement => `
+                    <div class="achievement ${this.data.achievements.includes(achievement.id) ? 'unlocked' : ''}">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-title">${achievement.title}</div>
+                        <div class="achievement-desc">${achievement.desc}</div>
+                    </div>
+                `).join('');
+            }
+
+            bindEvents() {
+                // Tema değişimi
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    this.data.theme = this.data.theme === 'dark' ? 'light' : 'dark';
+                    document.body.setAttribute('data-theme', this.data.theme);
+                    document.getElementById('themeToggle').textContent = this.data.theme === 'dark' ? '🌙 Koyu Tema' : '☀️ Açık Tema';
+                    this.saveData();
+                });
+
+                // Profil modal
+                document.getElementById('profileBtn').addEventListener('click', () => {
+                    document.getElementById('profileModal').style.display = 'flex';
+                });
+
+                document.getElementById('closeProfile').addEventListener('click', () => {
+                    document.getElementById('profileModal').style.display = 'none';
+                });
+
+                // Modal dışına tıklayınca kapat
+                document.getElementById('profileModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('profileModal')) {
+                        document.getElementById('profileModal').style.display = 'none';
+                    }
+                });
+
+                // Ayarları kaydet
+                document.getElementById('saveSettings').addEventListener('click', () => {
+                    this.data.calorieGoal = parseInt(document.getElementById('calorieGoal').value) || 2000;
+                    this.data.userName = document.getElementById('userName').value;
+                    this.data.goal = document.getElementById('goal').value;
+                    this.saveData();
+                    this.updateUI();
+                    alert('Ayarlar kaydedildi! 💾');
+                });
+
+                // Verileri sıfırla
+                document.getElementById('resetData').addEventListener('click', () => {
+                    if (confirm('Tüm veriler silinecek! Emin misiniz?')) {
+                        localStorage.removeItem('dietData');
+                        location.reload();
+                    }
+                });
+
+                // Notification izni iste
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
+            }
+        }
+
+        // Uygulama başlat
+        const app = new DietApp();
+
+        let selectedMeal = null;
+        let isSpinning = false;
+
+        // Öğün seçimi
+        document.querySelectorAll('.meal-card').forEach(card => {
+            card.addEventListener('click', function() {
+                if (isSpinning) return;
+                
+                document.querySelectorAll('.meal-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedMeal = this.getAttribute('data-meal');
+                document.getElementById('generateMenu').disabled = false;
+            });
+        });
+
+        // Menü oluşturma
+        document.getElementById('generateMenu').addEventListener('click', function() {
+            if (!selectedMeal || isSpinning) return;
+
+            isSpinning = true;
+            this.disabled = true;
+            
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('menuSpinner').style.display = 'block';
+            
+            const menus = dietMenus[selectedMeal];
+            const carousel = document.getElementById('menuCarousel');
+            carousel.classList.add('spinning');
+            
+            let spinCount = 0;
+            const maxSpins = 12;
+            
+            const spinInterval = setInterval(() => {
+                const randomMenu = menus[Math.floor(Math.random() * menus.length)];
+                
+                carousel.innerHTML = `
+                    <div class="menu-meal">${randomMenu.name}</div>
+                    <ul class="menu-items">
+                        ${randomMenu.items.slice(0, 3).map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                `;
+                
+                spinCount++;
+                
+                if (spinCount >= maxSpins) {
+                    clearInterval(spinInterval);
+                    carousel.classList.remove('spinning');
+                    
+                    const finalMenu = menus[Math.floor(Math.random() * menus.length)];
+                    
+                    setTimeout(() => {
+                        document.getElementById('menuSpinner').style.display = 'none';
+                        showFinalMenu(finalMenu);
+                        
+                        isSpinning = false;
+                        document.getElementById('generateMenu').disabled = false;
+                    }, 300);
+                }
+            }, 150);
+        });
+
+        function showFinalMenu(menu) {
+            const mealNames = {
+                sabah: 'Sabah Kahvaltısı',
+                ogle: 'Öğle Yemeği', 
+                aksam: 'Akşam Yemeği'
+            };
+            
+            const resultHTML = `
+                <div class="diet-menu">
+                    <div class="menu-meal">${mealNames[selectedMeal]} - ${menu.name}</div>
+                    <ul class="menu-items">
+                        ${menu.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                    <div class="calories">Kalori: ${menu.calories} kcal</div>
+                    <button class="accept-menu-btn" onclick="acceptCurrentMenu()">
+                        ✅ Menüyü Kabul Et
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('menuResult').innerHTML = resultHTML;
+            document.getElementById('resultSection').style.display = 'block';
+            
+            document.getElementById('resultSection').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+
+            window.currentMenu = menu;
+            window.currentMeal = selectedMeal;
+        }
+
+        function acceptCurrentMenu() {
+            if (window.currentMenu && window.currentMeal) {
+                app.acceptMenu(window.currentMeal, window.currentMenu);
+                
+                // Kabul et butonunu disable yap
+                const acceptBtn = document.querySelector('.accept-menu-btn');
+                if (acceptBtn) {
+                    acceptBtn.textContent = '✅ Kabul Edildi';
+                    acceptBtn.disabled = true;
+                    acceptBtn.style.background = '#666';
+                    acceptBtn.style.cursor = 'not-allowed';
+                }
+            }
+        }
+
+        // Gece yarısında kaloriyi sıfırla
+        setInterval(() => {
+            const now = new Date();
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                app.data.todayCalories = 0;
+                app.saveData();
+                app.updateUI();
+            }
+        }, 60000);
+
+        // Hoş geldin mesajı
+        setTimeout(() => {
+            const userName = app.data.userName;
+            if (userName) {
+                const greetings = ['Merhaba', 'Hoş geldin', 'Tekrar hoş geldin'];
+                const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+                document.querySelector('.subtitle').textContent = `${greeting} ${userName}! Bugün hangi menüyü deneyelim?`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
